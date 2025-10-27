@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.ArrayList;
@@ -46,19 +46,19 @@ public class UserController {
         validateUser(user);
 
         if (!users.containsKey(user.getId())) {
-            throw new ValidationException("Пользователь с ID " + user.getId() + " не найден.");
+            throw new NotFoundException("Пользователь с ID " + user.getId() + " не найден.");
         }
         users.put(user.getId(), user);
         log.info("Обновление пользователя: {}", user);
         return user;
     }
 
-    private int  getNextId() {
+    private int getNextId() {
         return nextId++;
     }
 
     private void validateUser(User user) {
-        if (user.getName().isBlank()) {
+        if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
     }

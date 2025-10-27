@@ -1,9 +1,9 @@
-package ru.yandex.practicum.filmorate.contoller; // твой пакет
+package ru.yandex.practicum.filmorate.contoller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.controller.UserController;
-import ru.yandex.practicum.filmorate.model.User; // Убрали лишний import ValidationException
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 
@@ -18,7 +18,6 @@ public class UserControllerTest {
     }
 
     @Test
-        // ЭТОТ ТЕСТ ОСТАЁТСЯ, он проверяет логику контроллера (генерацию ID)
     void add_whenAllDataIsValid_shouldAddUserSuccessfully() {
         User user = new User();
         user.setEmail("123@mail.ru");
@@ -34,20 +33,15 @@ public class UserControllerTest {
     }
 
     @Test
-        // ЭТОТ ТЕСТ ОСТАЁТСЯ, он проверяет логику контроллера (подстановку имени)
     void add_whenNameIsBlank_shouldUseLoginAsName() {
         User user = new User();
         user.setEmail("123@mail.ru");
         user.setLogin("Login");
-        user.setName(""); // Пустое имя
+        user.setName("");
         user.setBirthday(LocalDate.of(1995, 8, 1));
 
         User addeduser = userController.add(user);
 
-        // Проверяем, что контроллер сам подставил логин в имя
         assertEquals("Login", addeduser.getName(), "Имя пользователя должно было взяться из логина");
     }
-
-    // ----- ВСЕ ОСТАЛЬНЫЕ ТЕСТЫ (email, login, birthday) УДАЛЯЕМ ОТСЮДА -----
-    // Они теперь в UserValidationTest.java
 }
