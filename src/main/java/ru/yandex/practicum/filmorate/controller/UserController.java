@@ -1,65 +1,77 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
 @Slf4j
+@RequiredArgsConstructor
 public class UserController {
 
-    private final Map<Integer, User> users = new HashMap<>();
-    private int nextId = 1;
+    private final UserService userService;
 
     @GetMapping
     public List<User> getAll() {
-        log.info("Получение всех пользователей");
-        return new ArrayList<>(users.values());
+        log.info("Получен GET-запрос /users");
+        return userService.getAll();
     }
 
     @PostMapping
-    public User add(@Valid @RequestBody User user) {
-        validateUser(user);
-
-        int id = getNextId();
-        user.setId(id);
-        users.put(id, user);
-        log.info("Добавление пользователя: {}", user);
-        return user;
+    public User create(@Valid @RequestBody User user) {
+        log.info("Получен POST-запрос /users: {}", user);
+        return userService.create(user);
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
-        validateUser(user);
-
-        if (!users.containsKey(user.getId())) {
-            throw new NotFoundException("Пользователь с ID " + user.getId() + " не найден.");
-        }
-        users.put(user.getId(), user);
-        log.info("Обновление пользователя: {}", user);
-        return user;
+        log.info("Получен PUT-запрос /users: {}", user);
+        return userService.update(user);
     }
 
-    private int getNextId() {
-        return nextId++;
+    @GetMapping("/{id}")
+    public User getById(@PathVariable int id) {
+        log.info("Получен GET-запрос /users/{}", id);
+        return userService.getById(id);
     }
 
-    private void validateUser(User user) {
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
+    @PutMapping("/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable int id, @PathVariable int friendId) {
+        log.info("Получен PUT-запрос /users/{}/friends/{}", id, friendId);
+        userService.addFriend(id, friendId);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void removeFriend(@PathVariable int id, @PathVariable int friendId) {
+        log.info("Получен DELETE-запрос /users/{}/friends/{}", id, friendId);
+        userService.removeFriend(id, friendId);
+    }
+
+    @GetMapping("/{id}/friends")
+    public List<User> getFriendsList(@PathVariable int id) {
+        log.info("Получен GET-запрос /users/{}/friends", id);
+        return userService.getFriendsList(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(
+            @PathVariable int id,
+            @PathVariable int otherId
+    ) {
+        log.info("Получен GET-запрос /users/{}/friends/common/{}", id, otherId);
+        return userService.getCommonFriends(id, otherId);
     }
 }
