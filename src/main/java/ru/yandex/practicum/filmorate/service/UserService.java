@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.HashSet;
 import java.util.List;
@@ -23,7 +23,7 @@ public class UserService {
         return userStorage.getAll();
     }
 
-    public User getById(int id) {
+    public User getById(Long id) {
         log.debug("Сервис: Запрошен пользователь по ID: {}", id);
         return userStorage.getById(id);
     }
@@ -42,28 +42,28 @@ public class UserService {
     }
 
 
-    public List<User> getFriendsList(int userId) {
+    public List<User> getFriendsList(Long userId) {
         log.debug("Сервис: Запрошен список друзей для пользователя {}", userId);
         User user = userStorage.getById(userId);
-        Set<Integer> friendIds = user.getFriends();
+        Set<Long> friendIds = user.getFriends();
         return friendIds.stream()
                 .map(userStorage::getById)
                 .collect(Collectors.toList());
     }
 
-    public List<User> getCommonFriends(int userId, int otherId) {
+    public List<User> getCommonFriends(Long userId, Long otherId) {
         log.debug("Сервис: Запрошен список общих друзей для {} и {}", userId, otherId);
-        Set<Integer> userFriendIds = userStorage.getById(userId).getFriends();
-        Set<Integer> otherFriendIds = userStorage.getById(otherId).getFriends();
-        Set<Integer> commonIds = new HashSet<>(userFriendIds);
+        Set<Long> userFriendIds = userStorage.getById(userId).getFriends();
+        Set<Long> otherFriendIds = userStorage.getById(otherId).getFriends();
+        Set<Long> commonIds = new HashSet<>(userFriendIds);
         commonIds.retainAll(otherFriendIds); // Идеальное решение
         return commonIds.stream()
                 .map(userStorage::getById)
                 .collect(Collectors.toList());
     }
 
-    public void addFriend(int userId, int friendId) {
-        if (userId == friendId) {
+    public void addFriend(Long userId, Long friendId) {
+        if (userId.equals(friendId)) {
             log.warn("Попытка добавить в друзья самого себя (ID: {})", userId);
             throw new ValidationException("Нельзя добавить в друзья самого себя.");
         }
@@ -82,8 +82,8 @@ public class UserService {
         log.info("Пользователь {} и {} теперь друзья.", user.getLogin(), friend.getLogin());
     }
 
-    public void removeFriend(int userId, int friendId) {
-        if (userId == friendId) {
+    public void removeFriend(Long userId, Long friendId) {
+        if (userId.equals(friendId)) {
             log.warn("Попытка удалить из друзей самого себя (ID: {})", userId);
             throw new ValidationException("Нельзя удалить из друзей самого себя.");
         }

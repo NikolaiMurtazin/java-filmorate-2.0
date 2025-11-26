@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class FilmService {
         return filmStorage.getAll();
     }
 
-    public Film getById(int id) {
+    public Film getById(Long id) {
         log.debug("Сервис: Запрошен фильм по ID: {}", id);
         return filmStorage.getById(id);
     }
@@ -55,7 +55,7 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
-    public void addLike(int filmId, int userId) {
+    public void addLike(Long filmId, Long userId) {
         log.debug("Запрос на добавление лайка от пользователя {} фильму {}", userId, filmId);
         Film film = filmStorage.getById(filmId);
         User user = userService.getById(userId);
@@ -70,7 +70,7 @@ public class FilmService {
         log.info("Пользователь {} успешно поставил лайк фильму {}", userId, filmId);
     }
 
-    public void removeLike(int filmId, int userId) {
+    public void removeLike(Long filmId, Long userId) {
         log.debug("Запрос на удаление лайка от пользователя {} фильму {}", userId, filmId);
         Film film = filmStorage.getById(filmId);
         User user = userService.getById(userId);

@@ -1,11 +1,11 @@
-package ru.yandex.practicum.filmorate.tools;
+package ru.yandex.practicum.filmorate.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 import java.time.LocalDate;
 
-import static ru.yandex.practicum.filmorate.tools.Constants.MIN_RELEASE_DATE;
+import static ru.yandex.practicum.filmorate.util.Constants.MIN_RELEASE_DATE;
 
 public class ReleaseDateValidator implements ConstraintValidator<ValidReleaseDate, LocalDate> {
 
